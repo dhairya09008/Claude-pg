@@ -10,8 +10,23 @@ const Logo = () => (
 );
 
 function App() {
+  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const scrollToForm = () => {
     document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitted(true);
+      // Reset after 5 seconds
+      setTimeout(() => setSubmitted(false), 5000);
+    }, 1000);
   };
 
   return (
@@ -188,10 +203,11 @@ function App() {
               Fill this out. I'll follow up within 24 hours.
             </p>
 
-            <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-8" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-warm-off-white">What type of business do you run?</label>
                 <input
+                  required
                   type="text"
                   placeholder="e.g. Mortgage broker, electrician, real estate agent..."
                   className="w-full bg-glass-surface border border-glass-border rounded-[6px] px-4 py-4 focus:outline-none focus:border-electric-cyan transition-all text-warm-off-white placeholder:text-dark-gray"
@@ -200,6 +216,7 @@ function App() {
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-warm-off-white">What's your biggest marketing problem right now?</label>
                 <textarea
+                  required
                   rows={4}
                   placeholder="Be as specific as you can — the more detail, the better I can help."
                   className="w-full bg-glass-surface border border-glass-border rounded-[6px] px-4 py-4 focus:outline-none focus:border-electric-cyan transition-all text-warm-off-white placeholder:text-dark-gray resize-none"
@@ -208,14 +225,32 @@ function App() {
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-warm-off-white">Your name and best way to reach you</label>
                 <input
+                  required
                   type="text"
                   placeholder="Name, email, or phone — whatever you prefer"
                   className="w-full bg-glass-surface border border-glass-border rounded-[6px] px-4 py-4 focus:outline-none focus:border-electric-cyan transition-all text-warm-off-white placeholder:text-dark-gray"
                 />
               </div>
-              <button className="w-full bg-electric-cyan hover:bg-deep-cyan text-deep-slate py-5 rounded-[6px] font-bold text-lg transition-all shadow-[0_0_30px_rgba(34,211,238,0.2)]">
-                Send It
-              </button>
+              <div className="relative">
+                <button
+                  disabled={isSubmitting || submitted}
+                  className="w-full bg-electric-cyan hover:bg-deep-cyan disabled:opacity-50 disabled:cursor-not-allowed text-deep-slate py-5 rounded-[6px] font-bold text-lg transition-all shadow-[0_0_30px_rgba(34,211,238,0.2)]"
+                >
+                  {isSubmitting ? 'Sending...' : 'Send It'}
+                </button>
+
+                {submitted && (
+                  <div className="absolute top-1/2 -right-4 -translate-y-1/2 translate-x-full hidden md:flex items-center gap-2 bg-electric-cyan text-deep-slate px-4 py-2 rounded-full font-bold text-sm shadow-xl animate-in fade-in slide-in-from-left-4 duration-300">
+                    <span className="text-lg">✓</span> Sent
+                  </div>
+                )}
+
+                {submitted && (
+                  <div className="mt-4 flex md:hidden items-center justify-center gap-2 text-electric-cyan font-bold animate-bounce">
+                    ✓ Your message was sent!
+                  </div>
+                )}
+              </div>
             </form>
             <p className="text-dark-gray text-center mt-8 text-sm">
               No spam. No sales pitch on the call. Just a real conversation.
